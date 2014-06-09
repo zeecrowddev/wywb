@@ -21,6 +21,39 @@
 
 .pragma library
 
+function existsInArray(array, findDelegate)
+{
+    for (var i=0;i<array.length;i++)
+    {
+        if ( findDelegate(array[i]) )
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+function removeInArray(array, findDelegate)
+{
+    var index = -1;
+    for (var i=0;i<array.length;i++)
+    {
+        if ( findDelegate(array[i]) )
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index !=-1)
+    {
+        var result = array[index];
+        array.splice(index,1);
+        return result;
+    }
+    return null;
+}
+
 
 function parseDatas(datas)
 {

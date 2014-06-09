@@ -1,0 +1,11 @@
+﻿<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<RCC>
+	<qresource prefix='/Wywb'>
+		<file>Packages\Wywb.cfg</file>
+		<file>Resources\close.png</file>
+		<file>Views\Main.js</file>
+		<file>Views\Main.qml</file>
+		<file>Views\Tools.js</file>
+		<file>Wywb.zeeapmanifest</file>
+	</qresource>
+</RCC>

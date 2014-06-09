@@ -29,6 +29,7 @@ import ZcClient 1.0 as Zc
 
 
 import "Main.js" as Presenter
+import "Tools.js" as Tools
 
 
 Zc.AppView
@@ -193,18 +194,53 @@ Zc.AppView
             property string dayProperty : calculateDayProperty(styleData.date)
 
 
-            Image
+            function calculateBackcolor(value)
             {
-                visible: mainView["_" + dayProperty] !== ""
+
+                var o = Tools.parseDatas(value)
+
+                var whos = o.who.split("|")
+
+                listWho.model = whos
+
+                if (o.who === "" || o.who === undefined)
+                {
+                    return "transparent"
+                }
+
+
+                if (Tools.existsInArray(whos, function (x) { return x === mainView.context.nickname}))
+                {
+                    return "lightblue"
+                }
+
+                return "orange"
+            }
+
+
+//            Image
+//            {
+//                visible: mainView["_" + dayProperty] !== ""
+//                anchors.fill: parent
+//                source : mainView["_" + dayProperty] !== "" ? activity.getParticipantImageUrl(mainView["_" + dayProperty]) : ""
+//            }
+
+
+            ListView
+            {
+                id : listWho
                 anchors.fill: parent
-                source : mainView["_" + dayProperty] !== "" ? activity.getParticipantImageUrl(mainView["_" + dayProperty]) : ""
+                delegate : Label { text : modelData }
+
+                interactive: false
             }
 
             Rectangle {
                 id : backColor
                 anchors.fill: parent
                 border.color: "transparent"
-                color: mainView["_" + calculateDayProperty(styleData.date)] !== "" ? "orange" : "transparent"
+                //color: mainView["_" + calculateDayProperty(styleData.date)] !== "" ? "orange" : "transparent"
+                color: calculateBackcolor(mainView["_" + dayProperty])
                 anchors.margins: styleData.selected ? -1 : 0
                 opacity : 0.3
             }
@@ -325,17 +361,53 @@ Zc.AppView
             {
                 var split = idItem.split("|");
                 var date = new Date(parseInt(split[1]),parseInt(split[2]),parseInt(split[3]),0,0,0);
+                var who = split[0]
 
-                mainView[ "_" + mainView.calculateDayProperty(date)] = split[0];
+                var dayProperty = mainView.calculateDayProperty(date);
 
+                var o = Tools.parseDatas(mainView[ "_" + dayProperty]);
+
+                if (o.who === undefined || o.who === "")
+                {
+                    o.who = who;
+                }
+                else
+                {
+                    var whosplit = o.who.split("|");
+                    if (!Tools.existsInArray(whosplit,function(x){ return x === who}) )
+                    {
+                        o.who = o.who + "|" + who;
+                    }
+                }
+
+                mainView["_" + dayProperty] = JSON.stringify(o)
             }
 
             onItemDeleted :
             {
                 var split = idItem.split("|");
                 var date = new Date(parseInt(split[1]),parseInt(split[2]),parseInt(split[3]),0,0,0);
+                var who = split[0]
 
-                mainView[ "_" + mainView.calculateDayProperty(date)] = "";
+                var dayProperty = mainView.calculateDayProperty(date);
+
+                var o = Tools.parseDatas(mainView[ "_" + dayProperty]);
+
+                if (o.who !== undefined && o.who !== "")
+                {
+                    if (o.who === who)
+                    {
+                        o.who = "";
+                    }
+                    else
+                    {
+                        var whosplit = o.who.split("|");
+                        Tools.removeInArray(whosplit, function (x) { return x === who} )
+                        o.who = whosplit.join("|")
+                    }
+                }
+
+                mainView["_" + dayProperty] = JSON.stringify(o)
             }
         }
 
