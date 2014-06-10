@@ -1,0 +1,8 @@
+<x xmlns='jabber:x:data'>
+	<field type='text-single' var='StartDate' label='StartDate'><value>01/01/2001</value>
+	</field>
+	<field type='text-single' var='EndDate' label='EndDate'><value>01/01/2001</value>
+	</field>
+	<field type='text-single' var='Description' label='Description'><value></value>
+	</field>
+</x>

@@ -135,7 +135,6 @@ Zc.AppView
 
         Tools.forEachInArray(all,function(x)
         {
-            console.log(">> UPDATE " + x)
             updateDayPropertyFromItem(x,"")}
         );
 
@@ -168,15 +167,41 @@ Zc.AppView
     function generateKey(date)
     {
         return mainView.context.nickname + "|" +
-                calendar.selectedDate.getYear() + "|" +
-                calendar.selectedDate.getMonth() + "|" +
-                calendar.selectedDate.getDate();
+                date.getYear() + "|" +
+                date.getMonth() + "|" +
+                date.getDate();
+    }
+
+    Rectangle
+    {
+        id : descriptionContainer
+        anchors.top : parent.top
+        anchors.left : parent.left
+        anchors.right: parent.right
+
+        height : 40
+
+        color : "white"
+        opacity : 0.8
+
+        Label
+        {
+            id : description
+            anchors.fill: parent
+            font.pixelSize: 25
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
     Calendar
     {
         id : calendar
-        anchors.fill: parent
+
+        anchors.top: descriptionContainer.bottom
+        anchors.topMargin: 5
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.left: parent.left
 
         style : CalendarStyle
         {
@@ -189,25 +214,18 @@ Zc.AppView
             readonly property color invalidDatecolor: "#dddddd"
 
 
-//            function backgroundColor()
-//            {
-
-//                console.log(">> calculate backcolor of " + selectedDateColor)
-//                if (styleData.date !== undefined && styleData.selected)
-//                    return selectedDateColor;
-//                else
-//                    if (mainView["_" + styleData.date.getDate()] !== "")
-//                        return "red"
-//                    else
-//                        return  "transparent"
-//            }
-
-
             property string dayProperty : calculateDayProperty(styleData.date)
 
 
-            function calculateBackcolor(value)
+            function calculateBackcolor(value ,isValid)
             {
+
+                if (!isValid)
+                {
+                    listWho.model = null
+                    return "lightgrey"
+                }
+
 
                 var o = Tools.parseDatas(value)
 
@@ -252,6 +270,8 @@ Zc.AppView
                                                      anchors.left: parent.left
                                                      anchors.top : parent.top
                                                      source : activity.getParticipantImageUrl(modelData)
+                                                     sourceSize.width: 14
+
                                                  }
                                                  Label
                                                  {
@@ -272,22 +292,11 @@ Zc.AppView
                 anchors.fill: parent
                 border.color: "transparent"
                 //color: mainView["_" + calculateDayProperty(styleData.date)] !== "" ? "orange" : "transparent"
-                color: calculateBackcolor(mainView["_" + dayProperty])
+                color:  calculateBackcolor(mainView["_" + dayProperty],styleData.valid)
                 anchors.margins: styleData.selected ? -1 : 0
                 opacity : 0.3
             }
 
-
-
-//            Image {
-//                visible: eventModel.eventsForDate(styleData.date).length > 0
-//                anchors.top: parent.top
-//                anchors.left: parent.left
-//                anchors.margins: -1
-//                width: 12
-//                height: width
-//                source: "qrc:/images/eventindicator.png"
-//            }
 
             Label {
                 id: dayDelegateText
@@ -295,15 +304,22 @@ Zc.AppView
                 font.pixelSize: 14
                 anchors.centerIn: parent
                 color: {
-                    var color = invalidDatecolor;
+                    var color = "blue";
                     if (styleData.valid) {
                         // Date is within the valid range.
                         color = styleData.visibleMonth ? sameMonthDateTextColor : differentMonthDateTextColor;
-//                        if (styleData.selected) {
-//                            color = selectedDateTextColor;
-//                        }
                     }
                     color;
+                }
+            }
+
+            MouseArea
+            {
+                anchors.fill: parent
+                onClicked:
+                {
+                    if (styleData.valid)
+                        calendar.clicked(styleData.date)
                 }
             }
         }
@@ -312,7 +328,7 @@ Zc.AppView
 
         onClicked:
         {
-            var key = generateKey(calendar.selectedDate);
+            var key = generateKey(date) ;
 
             if (items.getItem(key,"___") === "___")
             {
@@ -362,7 +378,6 @@ Zc.AppView
         else if (month + 1 === mainView.currentMonth ||
                  (mainView.currentMonth === 0 && month === 11))
         {
-
             var days = days_in_month(month,year);
 
             val = mainView.dayOfWeek - (days - daydate);
@@ -382,7 +397,6 @@ Zc.AppView
         var who = split[0]
 
         var dayProperty = mainView.calculateDayProperty(date);
-
         var o = Tools.parseDatas(mainView[ "_" + dayProperty]);
 
         if (o.who === undefined || o.who === "")
@@ -413,6 +427,26 @@ Zc.AppView
 
                 onCompleted :
                 {
+
+                    var startDateText = mainView.context.applicationConfiguration.getProperty("StartDate","");
+
+                    if (startDateText !== "")
+                    {
+                        var splitsd =  startDateText.split("/");
+                        calendar.minimumDate = new Date(parseInt(splitsd[2]),parseInt(splitsd[1]),parseInt(splitsd[0]),0)
+                    }
+
+
+                    var enddateText = mainView.context.applicationConfiguration.getProperty("EndDate","");
+
+                    if (enddateText !== "")
+                    {
+                        var splited =  enddateText.split("/");
+                        calendar.maximumDate = new Date(parseInt(splited[2]),parseInt(splited[1]),parseInt(splited[0]),0)
+                    }
+
+                    description.text =  " " + mainView.context.applicationConfiguration.getProperty("Description","")
+
                     updateAll();
 
                     splashScreenId.visible = false;

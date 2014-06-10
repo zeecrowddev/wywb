@@ -59,6 +59,14 @@
               <Items />
             </QtResourceFile>
           </Item>
+          <Item Template="QtResourceFile">
+            <QtResourceFile FileName="icon.png">
+              <Properties>
+                <BuildAction value="Compile" />
+              </Properties>
+              <Items />
+            </QtResourceFile>
+          </Item>
         </Items>
       </QtResourceProjectFolder>
     </Item>
@@ -100,6 +108,28 @@
             <QtResourceFile FileName="SplashScreen.qml">
               <Properties>
                 <BuildAction value="Compile" />
+                <Locale value="" />
+                <Alias value="" />
+              </Properties>
+              <Items />
+            </QtResourceFile>
+          </Item>
+          <Item Template="QtResourceFile">
+            <QtResourceFile FileName="WywbConfiguration.qml">
+              <Properties>
+                <BuildAction value="Compile" />
+                <Locale value="" />
+                <Alias value="" />
+              </Properties>
+              <Items />
+            </QtResourceFile>
+          </Item>
+          <Item Template="QtResourceFile">
+            <QtResourceFile FileName="WDaySelector.qml">
+              <Properties>
+                <BuildAction value="Compile" />
+                <Locale value="" />
+                <Alias value="" />
               </Properties>
               <Items />
             </QtResourceFile>
@@ -124,6 +154,8 @@
       <QtResourceFile FileName="Wywb.zeeapmanifest">
         <Properties>
           <BuildAction value="Compile" />
+          <Locale value="" />
+          <Alias value="" />
         </Properties>
         <Items />
       </QtResourceFile>
