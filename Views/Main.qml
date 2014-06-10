@@ -129,6 +129,18 @@ Zc.AppView
     property int currentMonth : 0;
 
 
+    function updateAll()
+    {
+        var all = items.getAllItems();
+
+        Tools.forEachInArray(all,function(x)
+        {
+            console.log(">> UPDATE " + x)
+            updateDayPropertyFromItem(x,"")}
+        );
+
+    }
+
     function clearDayProperties()
     {
         for (var i = 1;i <= 42;i++)
@@ -199,41 +211,61 @@ Zc.AppView
 
                 var o = Tools.parseDatas(value)
 
-                var whos = o.who.split("|")
-
-                listWho.model = whos
-
                 if (o.who === "" || o.who === undefined)
                 {
+                    listWho.model = null
                     return "transparent"
                 }
 
+                    var whos = o.who.split("|")
 
-                if (Tools.existsInArray(whos, function (x) { return x === mainView.context.nickname}))
-                {
-                    return "lightblue"
-                }
+                    listWho.model = whos
+
+                    if (Tools.existsInArray(whos, function (x) { return x === mainView.context.nickname}))
+                    {
+                        return "lightblue"
+                    }
 
                 return "orange"
             }
 
 
-//            Image
-//            {
-//                visible: mainView["_" + dayProperty] !== ""
-//                anchors.fill: parent
-//                source : mainView["_" + dayProperty] !== "" ? activity.getParticipantImageUrl(mainView["_" + dayProperty]) : ""
-//            }
 
 
             ListView
             {
                 id : listWho
                 anchors.fill: parent
-                delegate : Label { text : modelData }
+                spacing : 3
+                delegate :
+
+                      Item
+                      {
+                         height : 14
+                         width : parent.width
+
+                                                 Image
+                                                 {
+                                                     id : avatar
+                                                     height : 14
+                                                     width : 14
+                                                     anchors.left: parent.left
+                                                     anchors.top : parent.top
+                                                     source : activity.getParticipantImageUrl(modelData)
+                                                 }
+                                                 Label
+                                                 {
+                                                     text : modelData
+                                                     anchors.left: avatar.right
+                                                     anchors.leftMargin : 3
+                                                 }
+
+
+                       }
 
                 interactive: false
             }
+
 
             Rectangle {
                 id : backColor
@@ -295,15 +327,20 @@ Zc.AppView
         onVisibleMonthChanged:
         {
             calculateParameters()
+            mainView.updateAll();
         }
 
         onVisibleYearChanged:
         {
             calculateParameters()
+            mainView.updateAll();
         }
     }
 
-
+    /*
+    ** Return le numero de la case affichée
+    ** 100 si pas trouvé
+    */
     function calculateDayProperty(date)
     {
         var daydate = date.getDate();
@@ -338,6 +375,32 @@ Zc.AppView
     }
 
 
+    function updateDayPropertyFromItem(idItem,value)
+    {
+        var split = idItem.split("|");
+        var date = new Date(parseInt(split[1]),parseInt(split[2]),parseInt(split[3]),0,0,0);
+        var who = split[0]
+
+        var dayProperty = mainView.calculateDayProperty(date);
+
+        var o = Tools.parseDatas(mainView[ "_" + dayProperty]);
+
+        if (o.who === undefined || o.who === "")
+        {
+            o.who = who;
+        }
+        else
+        {
+            var whosplit = o.who.split("|");
+            if (!Tools.existsInArray(whosplit,function(x){ return x === who}) )
+            {
+                o.who = o.who + "|" + who;
+            }
+        }
+
+        mainView["_" + dayProperty] = JSON.stringify(o)
+    }
+
     Zc.CrowdActivity
     {
         id : activity
@@ -350,37 +413,22 @@ Zc.AppView
 
                 onCompleted :
                 {
+                    updateAll();
+
+                    splashScreenId.visible = false;
+                    splashScreenId.width = 0;
+                    splashScreenId.height = 0;
+
                 }
             }
 
             id          : items
             name        : "CalendarItems"
-            //persistent  : true
+            persistent  : true
 
             onItemChanged :
             {
-                var split = idItem.split("|");
-                var date = new Date(parseInt(split[1]),parseInt(split[2]),parseInt(split[3]),0,0,0);
-                var who = split[0]
-
-                var dayProperty = mainView.calculateDayProperty(date);
-
-                var o = Tools.parseDatas(mainView[ "_" + dayProperty]);
-
-                if (o.who === undefined || o.who === "")
-                {
-                    o.who = who;
-                }
-                else
-                {
-                    var whosplit = o.who.split("|");
-                    if (!Tools.existsInArray(whosplit,function(x){ return x === who}) )
-                    {
-                        o.who = o.who + "|" + who;
-                    }
-                }
-
-                mainView["_" + dayProperty] = JSON.stringify(o)
+                updateDayPropertyFromItem(idItem,"")
             }
 
             onItemDeleted :
@@ -434,4 +482,12 @@ Zc.AppView
     {
         activity.stop();
     }
+
+    SplashScreen
+    {
+        id : splashScreenId
+        width : parent.width
+        height: parent.height
+    }
+
 }

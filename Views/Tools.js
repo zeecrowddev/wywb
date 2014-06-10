@@ -21,6 +21,15 @@
 
 .pragma library
 
+
+function foreachInListModel(listModel, delegate)
+{
+    for (var i=0;i<listModel.count;i++)
+    {
+        delegate(listModel.get(i));
+    }
+}
+
 function existsInArray(array, findDelegate)
 {
     for (var i=0;i<array.length;i++)
@@ -52,6 +61,14 @@ function removeInArray(array, findDelegate)
         return result;
     }
     return null;
+}
+
+function forEachInArray(array, delegate)
+{
+    for (var i=0;i<array.length;i++)
+    {
+        delegate(array[i]);
+    }
 }
 
 

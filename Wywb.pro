@@ -5,5 +5,6 @@ OTHER_FILES += \
     Views/WebAppView.qml \
     Views/InputMessageWidget.qml \
     Views/Delegates/ChatDelegate.qml \
-    Views/Tools.js
+    Views/Tools.js \
+    Views/SplashScreen.qml
    
