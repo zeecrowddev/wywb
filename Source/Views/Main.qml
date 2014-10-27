@@ -87,7 +87,7 @@ Zc.AppView
         Action {
             id: closeAction
             shortcut: "Ctrl+X"
-            iconSource: "qrc:/WebApp/Resources/close.png"
+            iconSource: "qrc:/Wywb/Resources/close.png"
             tooltip : "Close Application"
             onTriggered:
             {
@@ -333,10 +333,12 @@ Zc.AppView
             if (items.getItem(key,"___") === "___")
             {
                 items.setItem(key,"",null)
+                appNotification.logEvent(Zc.AppNotification.Add,"Date",date,"")
             }
             else
             {
                 items.deleteItem(key)
+                appNotification.logEvent(Zc.AppNotification.Delete,"Date",date,"")
             }
         }
 

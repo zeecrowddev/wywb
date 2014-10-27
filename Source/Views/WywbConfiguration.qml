@@ -148,7 +148,8 @@ ZcAppConfigurationView
     onLoaded :
     {
         var startdateText = mainViewConfig.dataFormConfiguration.getFieldValue("StartDate","");
-        console.log(">> startdateText " + startdateText)
+
+        var today = new Date()
 
         if (startdateText !== "")
         {
@@ -157,13 +158,11 @@ ZcAppConfigurationView
         }
         else
         {
-
-            startDate.setDate(Date.now().getFullYear(),Date.now().getMonth(),Date.now().getDay(),0)
+            startDate.setDate(today.getFullYear(),today.getMonth(),today.getDay(),0)
         }
 
         var enddateText = mainViewConfig.dataFormConfiguration.getFieldValue("EndDate","");
 
-        console.log(">> enddateText " + enddateText)
 
         if (enddateText !== "")
         {
@@ -172,7 +171,7 @@ ZcAppConfigurationView
         }
         else
         {
-            endDate.setDate(Date.now().getFullYear(),Date.now().getMonth(),Date.now().getDay(),0)
+            endDate.setDate(today.getFullYear(),today.getMonth(),today.getDay(),0)
         }
 
         description.text = mainViewConfig.dataFormConfiguration.getFieldValue("Description","")
